@@ -1,20 +1,16 @@
-use std::sync::Arc;
-
-use bevy::{
-    prelude::*,
-    sprite::collide_aabb::{collide, Collision},
-    sprite::MaterialMesh2dBundle,
-};
+use bevy::prelude::*;
 
 mod components;
 
 mod systems {
+    pub mod collision;
     pub mod enemy;
     pub mod player;
 }
 
+use components::Collider;
 use components::Player;
-use systems::{enemy::*, player::*};
+use systems::{collision::*, enemy::*, player::*};
 
 const SPRITE_SCALE: Vec3 = Vec3::new(2.0, 2.0, 1.0);
 const FIXED_TIMESTEP: f32 = 1.0 / 60.0;
@@ -24,6 +20,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_systems(Startup, setup)
         .add_systems(Startup, spawn_enemies)
+        .add_systems(Update, collision)
         .add_systems(FixedUpdate, player_movement)
         .add_systems(FixedUpdate, enemy_ai_system)
         .insert_resource(FixedTime::new_from_secs(FIXED_TIMESTEP))
@@ -46,6 +43,8 @@ fn setup(
     let player_y = 20.0;
 
     commands.spawn((
+        Player,
+        Collider { radius: 24.0 },
         SpriteBundle {
             texture: player_texture_handle,
             transform: Transform {
@@ -59,8 +58,6 @@ fn setup(
             },
             ..default()
         },
-        Player,
-        // Collider,
     ));
 }
 
