@@ -13,7 +13,7 @@ use components::Player;
 use systems::{collision::*, enemy::*, player::*};
 
 const SPRITE_SCALE: Vec3 = Vec3::new(2.0, 2.0, 1.0);
-const FIXED_TIMESTEP: f32 = 1.0 / 60.0;
+const FIXED_TIMESTEP: f64 = 1.0 / 60.0;
 
 fn main() {
     App::new()
@@ -23,7 +23,7 @@ fn main() {
         .add_systems(Update, collision)
         .add_systems(FixedUpdate, player_movement)
         .add_systems(FixedUpdate, enemy_ai_system)
-        .insert_resource(FixedTime::new_from_secs(FIXED_TIMESTEP))
+        .insert_resource(Time::from_seconds(FIXED_TIMESTEP))
         .run();
 }
 
